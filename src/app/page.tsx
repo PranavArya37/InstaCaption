@@ -198,7 +198,10 @@ export default function InstaCaptionPage() {
       </main>
 
       <footer className="w-full max-w-3xl mt-16 mb-8 text-center text-sm text-muted-foreground">
-        <p>&copy; {currentYear !== null ? currentYear : ''} InstaCaption. Powered by AI creativity.</p>
+        <p>&copy; {currentYear !== null ? currentYear : ''} InstaCaption. Powered by AI creativity.
+          <br />
+          Made with ❤️ in India by <a href="https://pranavarya.in" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">Pranav Arya</a>
+        </p>
       </footer>
     </div>
   );
