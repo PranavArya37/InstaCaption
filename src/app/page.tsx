@@ -1,7 +1,7 @@
 // src/app/page.tsx
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import NextImage from 'next/image'; // Aliased to avoid conflict with Lucide's Image icon
 import { UploadCloud, Copy, Loader2, Image as ImageIcon, Sparkles, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,11 @@ export default function InstaCaptionPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -193,7 +198,7 @@ export default function InstaCaptionPage() {
       </main>
 
       <footer className="w-full max-w-3xl mt-16 mb-8 text-center text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} InstaCaption. Powered by AI creativity.</p>
+        <p>&copy; {currentYear !== null ? currentYear : ''} InstaCaption. Powered by AI creativity.</p>
       </footer>
     </div>
   );
