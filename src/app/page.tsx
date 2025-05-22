@@ -1,3 +1,4 @@
+
 // src/app/page.tsx
 'use client';
 
@@ -8,6 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { handleGenerateCaptions } from './actions';
+
+const MAX_FILE_SIZE_MB = 4;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export default function InstaCaptionPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -24,9 +28,13 @@ export default function InstaCaptionPage() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 4 * 1024 * 1024) { // Limit file size to 4MB as an example
-        setError("Image size should not exceed 4MB.");
-        toast({ title: "File Too Large", description: "Image size should not exceed 4MB.", variant: "destructive" });
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        const errorMessage = `Image size exceeds the ${MAX_FILE_SIZE_MB}MB limit. Please upload a smaller image.`;
+        setError(errorMessage);
+        toast({ title: "File Too Large", description: errorMessage, variant: "destructive" });
+        // Clear the file input so the user can select a different file
+        event.target.value = ''; 
+        setUploadedImage(null); // Also clear any previously uploaded image preview
         return;
       }
       const reader = new FileReader();
@@ -36,8 +44,9 @@ export default function InstaCaptionPage() {
         setError(null); 
       };
       reader.onerror = () => {
-        setError("Failed to read the image file.");
-        toast({ title: "Error Reading File", description: "Could not read the selected image.", variant: "destructive" });
+        const readErrorMessage = "Failed to read the image file. Please try again or select a different file.";
+        setError(readErrorMessage);
+        toast({ title: "Error Reading File", description: readErrorMessage, variant: "destructive" });
       }
       reader.readAsDataURL(file);
     }
@@ -95,7 +104,7 @@ export default function InstaCaptionPage() {
             <CardTitle className="flex items-center gap-2 text-2xl">
               <UploadCloud className="text-primary" /> Upload Your Photo
             </CardTitle>
-            <CardDescription>Select an image (max 4MB) from your device to get started.</CardDescription>
+            <CardDescription>Select an image (max {MAX_FILE_SIZE_MB}MB) from your device to get started.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-6">
@@ -108,7 +117,7 @@ export default function InstaCaptionPage() {
                   <div className="flex flex-col items-center justify-center space-y-3 text-muted-foreground h-64 sm:h-80">
                     <ImageIcon size={56} className="mb-2 opacity-70" />
                     <span className="font-medium">Click to browse or drag & drop</span>
-                    <span className="text-sm">PNG, JPG, GIF up to 4MB</span>
+                    <span className="text-sm">PNG, JPG, GIF, WEBP up to {MAX_FILE_SIZE_MB}MB</span>
                   </div>
                 )}
               </label>
@@ -198,7 +207,7 @@ export default function InstaCaptionPage() {
       </main>
 
       <footer className="w-full max-w-3xl mt-16 mb-8 text-center text-sm text-muted-foreground">
-        <p>&copy; {currentYear !== null ? currentYear : ''} InstaCaption. Powered by AI creativity.
+        <p>&copy; {currentYear !== null ? currentYear : new Date().getFullYear()} InstaCaption. Powered by AI creativity.
           <br />
           Made with ❤️ in India by <a href="https://pranavarya.in" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">Pranav Arya</a>
         </p>
